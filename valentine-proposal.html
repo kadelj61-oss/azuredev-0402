@@ -3,45 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine's Day Proposal</title>
+    <title>A Question for My Love 💝</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #ffcccb;
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            padding: 50px;
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.3);
+            max-width: 500px;
+            position: relative;
+            z-index: 10;
+        }
+
         h1 {
-            color: #ff1493;
+            color: #d63384;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-in;
         }
-        p {
-            font-size: 20px;
-            color: #333;
+
+        .message {
+            color: #555;
+            font-size: 1.3em;
+            margin: 30px 0;
+            line-height: 1.6;
+            animation: fadeIn 1.5s ease-in;
         }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
         button {
-            background-color: #ff69b4;
+            padding: 15px 40px;
+            font-size: 1.2em;
             border: none;
-            color: white;
-            padding: 15px 30px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
+            border-radius: 50px;
             cursor: pointer;
-            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .yes-btn {
+            background: linear-gradient(135deg, #ff6b9d 0%, #d63384 100%);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .yes-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(214, 51, 132, 0.4);
+        }
+
+        .no-btn {
+            background: #f0f0f0;
+            color: #999;
+            position: relative;
+        }
+
+        .no-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            animation: float 4s ease-in infinite;
+            opacity: 0;
+        }
+
+        .celebration {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4em;
+            z-index: 100;
+            animation: celebrate 2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes float {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(0deg);
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh) rotate(360deg);
+            }
+        }
+
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success-message {
+            color: #d63384;
+            font-size: 2em;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .funny-message {
+            color: #d63384;
+            font-size: 1.1em;
+            margin-top: 20px;
+            font-weight: bold;
+            min-height: 30px;
+            animation: fadeIn 0.5s ease-in;
         }
     </style>
 </head>
 <body>
-    <h1>Will You Be My Valentine?</h1>
-    <p>Join me this Valentine's Day for a surprise proposal!</p>
-    <button id="proposalButton">Propose</button>
-
+    <div class="hearts" id="hearts"></div>
+    <div class="celebration" id="celebration">💕✨💕</div>
+    
+    <div class="container" id="container">
+        <div id="question">
+            <h1>Hey Baby! 💝</h1>
+            <p class="message">
+                I've been thinking about this for a while...<br><br>
+                Would you be my Valentine? 💕
+            </p>
+            <div class="buttons">
+                <button class="yes-btn" onclick="sayYes()">Yes! 💖</button>
+                <button class="no-btn" id="noBtn" onclick="moveButton()">No</button>
+            </div>
+            <p class="funny-message" id="funnyMessage"></p>
+        </div>
+        
+        <div id="success" class="hidden">
+            <h1 class="success-message">Yay! 🎉💕</h1>
+            <p class="message">
+                You just made me the happiest person! ❤️<br><br>
+                Can't wait to celebrate with you! 💝
+            </p>
+        </div>
+    </div>
+    
     <script>
-        document.getElementById('proposalButton').addEventListener('click', function() {
-            alert("I love you! Will you marry me?");
-        });
+        // Create floating hearts
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDelay = Math.random() * 2 + 's';
+            heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            document.getElementById('hearts').appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 4000);
+        }
+
+        setInterval(createHeart, 300);
+
+        function sayYes() {
+            document.getElementById('question').classList.add('hidden');
+            document.getElementById('success').classList.remove('hidden');
+            document.getElementById('celebration').style.display = 'block';
+            
+            // Create burst of hearts
+            for (let i = 0; i < 20; i++) {
+                setTimeout(createHeart, i * 100);
+            }
+            
+            setTimeout(() => {
+                document.getElementById('celebration').style.display = 'none';
+            }, 2000);
+        }
+
+        function moveButton() {
+            const noBtn = document.getElementById('noBtn');
+            const container = document.getElementById('container');
+            const funnyMessage = document.getElementById('funnyMessage');
+            
+            // Array of funny messages
+            const messages = [
+                "Wrong button! Try again! 😏",
+                "Oops, that one's broken! 🙈",
+                "The 'No' button is being shy... 😅",
+                "Come on, you know you want to say yes! 💕",
+                "This button has commitment issues 😂",
+                "Nice try, but I'm not giving up! 😤",
+                "The Yes button is looking lonely over there... 🥺",
+                "I see what you're doing... 👀",
+                "Still here? Just click Yes already! 💖",
+                "I can do this all day! 😎"
+            ];
+            
+            // Show random funny message
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            funnyMessage.textContent = randomMessage;
+            
+            // Get random position within container
+            const containerRect = container.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            
+            const maxX = containerRect.width - btnRect.width - 40;
+            const maxY = containerRect.height - btnRect.height - 40;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            
+            // Make Yes button bigger and more enticing
+            const yesBtn = document.querySelector('.yes-btn');
+            const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            yesBtn.style.fontSize = (currentSize + 2) + 'px';
+        }
     </script>
 </body>
 </html>
